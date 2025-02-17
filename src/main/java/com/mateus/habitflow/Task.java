@@ -1,4 +1,4 @@
-package com.mateus;
+package com.mateus.habitflow;
 
 public class Task {
     private final String category;

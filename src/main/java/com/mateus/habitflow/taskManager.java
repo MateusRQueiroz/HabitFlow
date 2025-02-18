@@ -4,6 +4,10 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 
 import com.google.gson.Gson;
@@ -27,6 +31,31 @@ public final class taskManager {
     public void removeTask(int i) {
         tasks.remove(i);
         saveToFile();
+    }
+
+    public ArrayList<Task> getTasks(int order) {
+        ArrayList<Task> ordered_tasks = new ArrayList<>(tasks.values());
+        switch (order) {
+            // High, medium, low, optional
+            case 1 -> {
+                ordered_tasks.sort(Comparator.comparingInt(Task::getPriority));
+                return ordered_tasks;
+            }
+            // In progress, pending, on hold, completed, cancelled
+            case 2 ->  {
+                ordered_tasks.sort(Comparator.comparingInt(Task::getStatus));
+                return ordered_tasks;
+            }
+            case 3 -> {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyy-MM-dd");
+                ordered_tasks.sort(Comparator.comparing(task -> LocalDate.parse(task.getDue_date(), formatter)));
+                return ordered_tasks;
+            }
+            default -> {
+                System.out.println("Not a valid choice");
+                return null;
+            }
+        }
     }
 
     public void loadFromFile() {

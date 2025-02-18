@@ -1,4 +1,4 @@
-package com.mateus;
+package com.mateus.habitflow;
 
 /**
  * Hello world!

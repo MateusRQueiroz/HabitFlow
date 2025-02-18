@@ -24,12 +24,12 @@ public final class taskManager {
 
     public void addTask(String category, String description, String due_date, String status, int priority) {
         Task task = new Task(category, description, due_date, status, priority);
-        tasks.put(tasks.size(), task);
+        tasks.put(task.getId(), task);
         saveToFile();
     }
 
-    public void removeTask(int i) {
-        tasks.remove(i);
+    public void removeTask(int id) {
+        tasks.remove(id);
         saveToFile();
     }
 

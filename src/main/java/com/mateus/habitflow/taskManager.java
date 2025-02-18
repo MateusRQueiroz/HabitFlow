@@ -33,6 +33,29 @@ public final class taskManager {
         saveToFile();
     }
 
+    public ArrayList<Task> filterTasks(int filter, int criteria) {
+        ArrayList<Task> filtered_tasks = new ArrayList<>(tasks.values());
+        switch(filter) {
+            //priority
+            case 1 -> {
+                filtered_tasks.removeIf(task -> task.getPriority() != criteria);
+                filtered_tasks.sort(Comparator.comparingInt(Task::getPriority));
+                return filtered_tasks;
+            }
+            //status
+            case 2 -> {
+                filtered_tasks.removeIf(task -> task.getStatus() != criteria);
+                filtered_tasks.sort(Comparator.comparingInt(Task::getStatus));
+                return filtered_tasks;
+
+            }
+            default -> {
+                System.out.println("Not a valid choice");
+                return null;
+            }
+        }
+    }
+
     public ArrayList<Task> getTasks(int order) {
         ArrayList<Task> ordered_tasks = new ArrayList<>(tasks.values());
         switch (order) {
@@ -41,7 +64,7 @@ public final class taskManager {
                 ordered_tasks.sort(Comparator.comparingInt(Task::getPriority));
                 return ordered_tasks;
             }
-            // In progress, pending, on hold, completed, cancelled
+            // overdue, In progress, pending, on hold, completed, cancelled
             case 2 ->  {
                 ordered_tasks.sort(Comparator.comparingInt(Task::getStatus));
                 return ordered_tasks;

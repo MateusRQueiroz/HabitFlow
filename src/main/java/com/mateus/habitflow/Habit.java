@@ -25,20 +25,28 @@ public class Habit {
         return startOfWeek;
     }
 
-    public void checkStartOfWeek(){
+    public boolean isNewWeek(){
         LocalDate today = LocalDate.now();
-        if (today.isAfter(startOfWeek.plusDays(6))) {
-            startOfWeek = setStartOfWeek();
-            completionsThisWeek = 0;
-        }
+        return (today.isAfter(startOfWeek.plusDays(6)));
+    }
 
+    public void startNewWeek() {
+        startOfWeek = setStartOfWeek();
+        completionsThisWeek = 0;
+        if (completionsThisWeek >= recurrence) {
+            streak++;
+        }
+        else {
+            streak = 0;
+        }
     }
     
     public void updateHabitProgress() {
-        checkStartOfWeek();
+        if (isNewWeek()) {
+            startNewWeek();
+        }
         completionsThisWeek++;
     }
-
 
     public String getCategory() { return category;}
     public String getDescription() { return description; }

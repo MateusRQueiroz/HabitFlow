@@ -35,14 +35,14 @@ public class Habit {
     }
 
     public void startNewWeek() {
-        startOfWeek = setStartOfWeek();
-        completionsThisWeek = 0;
         if (completionsThisWeek >= recurrence) {
             streak++;
         }
         else {
             streak = 0;
         }
+        startOfWeek = setStartOfWeek();
+        completionsThisWeek = 0;
     }
     
     public void updateHabitProgress() {

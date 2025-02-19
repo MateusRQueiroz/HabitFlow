@@ -3,17 +3,18 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.nio.file.Paths;
 import java.util.HashMap;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 
-public final class habitManager {
+public final class HabitManager {
     private HashMap<Integer, Habit> habits = new HashMap<>();
     Gson gson = new Gson();
 
-    public habitManager() {
+    public HabitManager() {
         loadFromFile();
     }
 
@@ -33,7 +34,7 @@ public final class habitManager {
     }
 
     public void loadFromFile() {
-        try (FileReader reader = new FileReader("src\\main\\java\\com\\mateus\\habitflow\\habits.json")) {
+        try (FileReader reader = new FileReader(Paths.get("Data", "habits.json").toString())) {
             Type habitsMapType = new TypeToken<HashMap<Integer, Habit>>() {}.getType();
             habits = gson.fromJson(reader, habitsMapType);
         }
@@ -44,7 +45,7 @@ public final class habitManager {
     }
 
     public void saveToFile() {
-        try (FileWriter writer = new FileWriter("src\\main\\java\\com\\mateus\\habitflow\\habits.json")) {
+        try (FileWriter writer = new FileWriter(Paths.get("Data", "habits.json").toString())) {
             gson.toJson(habits, writer);
         }
         catch (IOException e) {

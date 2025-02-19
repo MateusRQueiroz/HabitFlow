@@ -4,6 +4,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -14,11 +15,11 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 
-public final class taskManager {
+public final class TaskManager {
     private HashMap<Integer, Task> tasks = new HashMap<>();
     Gson gson = new Gson();
 
-    public taskManager() {
+    public TaskManager() {
         loadFromFile();
     }
 
@@ -82,7 +83,7 @@ public final class taskManager {
     }
 
     public void loadFromFile() {
-        try (FileReader reader = new FileReader("src\\main\\java\\com\\mateus\\tasks.json")) {
+        try (FileReader reader = new FileReader(Paths.get("data", "tasks.json").toString())) {
             Type tasksMapType = new TypeToken<HashMap<Integer, Task>>() {}.getType();
             tasks = gson.fromJson(reader, tasksMapType);
             LocalDate today = LocalDate.now();
@@ -100,7 +101,7 @@ public final class taskManager {
     }
 
     public void saveToFile() {
-        try (FileWriter writer = new FileWriter("src\\main\\java\\com\\mateus\\tasks.json")) {
+        try (FileWriter writer = new FileWriter(Paths.get("data", "tasks.json").toString())) {
             gson.toJson(tasks, writer);
         } catch (IOException e) {
             System.out.println(e);

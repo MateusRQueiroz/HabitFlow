@@ -22,7 +22,7 @@ public final class taskManager {
         loadFromFile();
     }
 
-    public void addTask(String category, String description, String due_date, String status, int priority) {
+    public void addTask(String category, String description, String due_date, int status, int priority) {
         Task task = new Task(category, description, due_date, status, priority);
         tasks.put(task.getId(), task);
         saveToFile();
@@ -85,6 +85,14 @@ public final class taskManager {
         try (FileReader reader = new FileReader("src\\main\\java\\com\\mateus\\tasks.json")) {
             Type tasksMapType = new TypeToken<HashMap<Integer, Task>>() {}.getType();
             tasks = gson.fromJson(reader, tasksMapType);
+            LocalDate today = LocalDate.now();
+            for (Task task : tasks.values()) {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyy-MM-dd");
+                LocalDate dueDate = LocalDate.parse(task.getDue_date(), formatter);
+                if (today.isAfter(dueDate)) {
+                    task.changeStatus(1);
+                }
+            }
         } catch (IOException e) {
             System.out.println(e);
             System.out.println("Failed to load from file.");

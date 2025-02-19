@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -12,6 +13,7 @@ import com.google.gson.reflect.TypeToken;
 
 public final class HabitManager {
     private HashMap<Integer, Habit> habits = new HashMap<>();
+    private static final AtomicInteger count = new AtomicInteger(0);
     Gson gson = new Gson();
 
     public HabitManager() {
@@ -37,6 +39,8 @@ public final class HabitManager {
         try (FileReader reader = new FileReader(Paths.get("Data", "habits.json").toString())) {
             Type habitsMapType = new TypeToken<HashMap<Integer, Habit>>() {}.getType();
             habits = gson.fromJson(reader, habitsMapType);
+            int maxId = habits.keySet().stream().max(Integer::compare).orElse(0);
+            count.set(maxId);
         }
         catch (IOException e) {
             System.out.println(e);

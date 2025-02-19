@@ -10,6 +10,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -17,6 +18,7 @@ import com.google.gson.reflect.TypeToken;
 
 public final class TaskManager {
     private HashMap<Integer, Task> tasks = new HashMap<>();
+    private static final AtomicInteger count = new AtomicInteger(0);
     Gson gson = new Gson();
 
     public TaskManager() {
@@ -86,6 +88,8 @@ public final class TaskManager {
         try (FileReader reader = new FileReader(Paths.get("data", "tasks.json").toString())) {
             Type tasksMapType = new TypeToken<HashMap<Integer, Task>>() {}.getType();
             tasks = gson.fromJson(reader, tasksMapType);
+            int maxId = tasks.keySet().stream().max(Integer::compare).orElse(0);
+            count.set(maxId); 
             LocalDate today = LocalDate.now();
             for (Task task : tasks.values()) {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyy-MM-dd");

@@ -29,3 +29,7 @@ replay_pid*
 
 # lock files 
 *.LCKtaskManager.java~
+
+# others
+tasks.json/
+habits.json/

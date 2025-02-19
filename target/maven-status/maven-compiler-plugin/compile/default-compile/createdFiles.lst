@@ -1,0 +1,9 @@
+com\mateus\habitflow\serialization\LocalDateSerializer.class
+com\mateus\habitflow\HabitManager.class
+com\mateus\habitflow\Main.class
+com\mateus\habitflow\Task.class
+com\mateus\habitflow\HabitManager$1.class
+com\mateus\habitflow\TaskManager.class
+com\mateus\habitflow\Habit.class
+com\mateus\habitflow\serialization\LocalDateDeserializer.class
+com\mateus\habitflow\TaskManager$1.class

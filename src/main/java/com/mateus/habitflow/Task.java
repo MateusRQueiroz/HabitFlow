@@ -67,7 +67,7 @@ public class Task {
     }
 
     public String getCategory() { return category;}
-    public String getdescription() {return description;}
+    public String getDescription() {return description;}
     public String getDue_date() {return due_date;}
     public int getPriority() {return priority;}
     public int getStatus() {return status;}

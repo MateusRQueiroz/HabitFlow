@@ -4,6 +4,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -14,7 +16,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
 
 public final class TaskManager {
     private HashMap<Integer, Task> tasks = new HashMap<>();
@@ -85,22 +86,28 @@ public final class TaskManager {
     }
 
     public void loadFromFile() {
-        try (FileReader reader = new FileReader(Paths.get("data", "tasks.json").toString())) {
-            Type tasksMapType = new TypeToken<HashMap<Integer, Task>>() {}.getType();
-            tasks = gson.fromJson(reader, tasksMapType);
-            int maxId = tasks.keySet().stream().max(Integer::compare).orElse(0);
-            count.set(maxId); 
-            LocalDate today = LocalDate.now();
-            for (Task task : tasks.values()) {
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyy-MM-dd");
-                LocalDate dueDate = LocalDate.parse(task.getDue_date(), formatter);
-                if (today.isAfter(dueDate)) {
-                    task.changeStatus(1);
+        Path path = Paths.get("Data", "tasks.json");
+        try {
+            if (!Files.exists(path)) {
+                Files.createDirectories(path.getParent()); 
+                Files.createFile(path); 
+                tasks = new HashMap<>();  
+                return;  
+            }
+            try (FileReader reader = new FileReader(path.toString())) {
+                Type tasksMapType = new TypeToken<HashMap<Integer, Habit>>() {}.getType();
+                tasks = gson.fromJson(reader, tasksMapType);
+
+                if (tasks == null) {
+                    tasks = new HashMap<>();
                 }
+
+                int maxId = tasks.keySet().stream().max(Integer::compare).orElse(0);
+                count.set(maxId);
             }
         } catch (IOException e) {
             System.out.println(e);
-            System.out.println("Failed to load from file.");
+            System.out.println("Failed to load from tasks file");
         }
     }
 

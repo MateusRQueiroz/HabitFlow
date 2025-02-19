@@ -1,4 +1,6 @@
+
 package com.mateus.habitflow;
+
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -25,8 +27,7 @@ public class Habit {
 
     public final LocalDate setStartOfWeek() {
         LocalDate today = LocalDate.now();
-        startOfWeek = today.with(DayOfWeek.MONDAY);
-        return startOfWeek;
+        return today.with(DayOfWeek.MONDAY);
     }
 
     public boolean isNewWeek(){
@@ -37,14 +38,13 @@ public class Habit {
     public void startNewWeek() {
         if (completionsThisWeek >= recurrence) {
             streak++;
-        }
-        else {
+        } else {
             streak = 0;
         }
         startOfWeek = setStartOfWeek();
         completionsThisWeek = 0;
     }
-    
+
     public void updateHabitProgress() {
         if (isNewWeek()) {
             startNewWeek();
@@ -52,11 +52,10 @@ public class Habit {
         completionsThisWeek++;
     }
 
-    public Integer getId() { return id; }
+    public int getId() { return id; }
     public String getCategory() { return category;}
     public String getDescription() { return description; }
     public int recurrence() { return recurrence; }
     public int getStreak() { return streak; }
     public int getCompletions() { return completionsThisWeek; }
-
 }

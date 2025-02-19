@@ -31,5 +31,6 @@ replay_pid*
 *.LCKtaskManager.java~
 
 # others
-tasks.json/
-habits.json/
+dependency-reduced-pom.xml
+data/habits.json
+data/tasks.json

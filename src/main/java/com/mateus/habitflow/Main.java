@@ -13,11 +13,14 @@ public class Main {
         while (true) {
             System.out.println("\n===== HabitFlow CLI =====");
             System.out.println("1. Add Task");
-            System.out.println("2. List Tasks");
-            System.out.println("3. Change Task Status");
-            System.out.println("4. Add Habit");
-            System.out.println("5. List Habits");
-            System.out.println("6. Exit");
+            System.out.println("2. Remove Task");
+            System.out.println("3. List Tasks");
+            System.out.println("4. Change Task Status");
+            System.out.println("5. Add Habit");
+            System.out.println("6. Remove Habit");
+            System.out.println("7. List Habits");
+            System.out.println("8. Update Habit Progress"); 
+            System.out.println("9. Exit");
             System.out.print("Choose an option: ");
 
             int choice = scanner.nextInt();
@@ -25,11 +28,14 @@ public class Main {
             
             switch (choice) {
                 case 1 -> addTask();
-                case 2 -> listTasks();
-                case 3 -> changeTaskStatus();
-                case 4 -> addHabit();
-                case 5 -> listHabits();
-                case 6 -> {
+                case 2 -> removeTask();
+                case 3 -> listTasks();
+                case 4 -> changeTaskStatus();
+                case 5 -> addHabit();
+                case 6 -> removeHabit();
+                case 7 -> listHabits();
+                case 8 -> updateHabitProgress();
+                case 9 -> {
                     System.out.println("Exiting HabitFlow...");
                     return;
                 }
@@ -55,11 +61,58 @@ public class Main {
         System.out.println("Task added successfully!");
     }
 
+    private static void removeTask() {
+        System.out.print("Enter task ID to remove: ");
+        int id = scanner.nextInt();
+        scanner.nextLine();
+        if (taskManager.getTasks(1).stream().anyMatch(t -> t.getId() == id)) {
+            taskManager.removeTask(id);
+            System.out.println("Task removed successfully!");
+        } else {
+            System.out.println("Task with ID " + id + " not found.");
+        }
+    }
+    
+
+
     private static void listTasks() {
-        ArrayList<Task> tasks = taskManager.getTasks(1); 
+        System.out.println();
+        System.out.println("Ordered or Filtered: ");
+        String orderOrFilter = scanner.nextLine().toLowerCase();
+        ArrayList<Task> tasks = new ArrayList<>();
+        switch (orderOrFilter) {
+            case "ordered" -> {
+                System.out.println();
+                System.out.println("(1) Priority, (2) Status, or (3) Due Date: ");
+                int order = scanner.nextInt();
+                tasks = taskManager.getTasks(order); 
+            }
+            case "filtered" -> {
+                System.out.println();
+                System.out.println("Filtered by (1) Priority or (2) Status: ");
+                int filter = scanner.nextInt();
+                int criteria = 0;
+                switch (filter) {
+                    case 1 -> {
+                        System.out.println();
+                        System.out.println("Choose a priority number (1-4): ");
+                        criteria = scanner.nextInt();
+                    }
+                    case 2 -> {
+                        System.out.println();
+                        System.out.println("Enter status (1-Overdue, 2-In Progress, 3-Pending, 4-On Hold): ");
+                        criteria = scanner.nextInt();
+                    }
+                }
+                tasks = taskManager.filterTasks(filter, criteria);
+            }
+        }
+
         if (tasks.isEmpty()) {
+            System.out.println();
             System.out.println("No tasks available.");
             return;
+            
         }
 
         System.out.println("\n===== Task List =====");
@@ -100,6 +153,19 @@ public class Main {
         System.out.println("Habit added successfully!");
     }
 
+    private static void removeHabit() {
+        System.out.print("Enter habit ID to remove: ");
+        int id = scanner.nextInt();
+        scanner.nextLine();
+        if (habitManager.getHabits().containsKey(id)) {
+            habitManager.removeHabit(id);
+            System.out.println("Habit removed successfully!");
+        } else {
+            System.out.println("Habit with ID " + id + " not found.");
+        }
+    }
+
+
     private static void listHabits() {
         Map<Integer, Habit> habits = habitManager.getHabits();
         if (habits.isEmpty()) {
@@ -109,9 +175,31 @@ public class Main {
 
         System.out.println("\n===== Habit List =====");
         for (Habit habit : habits.values()) {
-            System.out.printf("ID: %d | %s | %s | Streak: %d | Recurrence: %d per week\n",
+            System.out.printf("ID: %d | %s | %s | Streak: %d | Recurrence: %d per week | Completions this week: %d\n",
                     habit.getId(), habit.getCategory(), habit.getDescription(),
-                    habit.getStreak(), habit.recurrence());
+                    habit.getStreak(), habit.recurrence(), habit.getCompletions());
         }
+    }
+
+    private static void updateHabitProgress() {
+        Map<Integer, Habit> habits = habitManager.getHabits();
+        if (habits.isEmpty()) {
+            System.out.println("No habits available to update.");
+            return;
+        }
+        System.out.println("\nUpdating habit progress...");
+
+        for (Habit habit : habits.values()) {
+            System.out.printf("Have you completed '%s' for today? (yes/no): ", habit.getDescription());
+            String input = scanner.nextLine().trim().toLowerCase();
+            if (input.equals("yes") || input.equals("y")) {
+                habit.updateHabitProgress();
+                System.out.printf("Progress updated for habit '%s'.%n", habit.getDescription());
+            } else {
+                System.out.printf("No progress recorded for habit '%s'.%n", habit.getDescription());
+            }
+        }
+        habitManager.saveToFile();
+        System.out.println("All habit progress updated.");
     }
 }

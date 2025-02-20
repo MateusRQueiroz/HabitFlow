@@ -45,7 +45,7 @@ HabitFlow is a command-line application designed to help users manage their task
 
 ### Main Menu 
 - When you run the application, you will see the following menu:
-![alt text](image.png)
+![alt text](CLI.png)
 
 ### Adding a Task 
 1. Select 1. Add Task.

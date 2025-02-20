@@ -1,4 +1,3 @@
-
 package com.mateus.habitflow;
 
 import java.time.DayOfWeek;
@@ -9,7 +8,7 @@ public class Habit {
     private static final AtomicInteger count = new AtomicInteger(0);
     private final String category;
     private final String description; 
-    private final int recurrence; //completions per week
+    private final int recurrence; // completions per week
     private int completionsThisWeek; 
     private final int id;
     private int streak;
@@ -25,6 +24,10 @@ public class Habit {
         this.startOfWeek = setStartOfWeek();
     }
 
+    public static void updateCounter(int maxId) {
+        count.set(maxId);
+    }
+    
     public final LocalDate setStartOfWeek() {
         LocalDate today = LocalDate.now();
         return today.with(DayOfWeek.MONDAY);
@@ -32,7 +35,7 @@ public class Habit {
 
     public boolean isNewWeek(){
         LocalDate today = LocalDate.now();
-        return (today.isAfter(startOfWeek.plusDays(6)));
+        return today.isAfter(startOfWeek.plusDays(6));
     }
 
     public void startNewWeek() {
@@ -53,7 +56,7 @@ public class Habit {
     }
 
     public int getId() { return id; }
-    public String getCategory() { return category;}
+    public String getCategory() { return category; }
     public String getDescription() { return description; }
     public int recurrence() { return recurrence; }
     public int getStreak() { return streak; }

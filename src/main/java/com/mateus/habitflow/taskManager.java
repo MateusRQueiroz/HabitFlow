@@ -12,17 +12,22 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.mateus.habitflow.serialization.LocalDateDeserializer;
+import com.mateus.habitflow.serialization.LocalDateSerializer;
 
 public final class TaskManager {
     private HashMap<Integer, Task> tasks = new HashMap<>();
-    private static final AtomicInteger count = new AtomicInteger(0);
-    Gson gson = new Gson();
+    private final Gson gson;
 
     public TaskManager() {
+        gson = new GsonBuilder()
+                .registerTypeAdapter(LocalDate.class, new LocalDateSerializer())
+                .registerTypeAdapter(LocalDate.class, new LocalDateDeserializer())
+                .create();
         loadFromFile();
     }
 
@@ -40,18 +45,15 @@ public final class TaskManager {
     public ArrayList<Task> filterTasks(int filter, int criteria) {
         ArrayList<Task> filtered_tasks = new ArrayList<>(tasks.values());
         switch(filter) {
-            //priority
             case 1 -> {
                 filtered_tasks.removeIf(task -> task.getPriority() != criteria);
                 filtered_tasks.sort(Comparator.comparingInt(Task::getPriority));
                 return filtered_tasks;
             }
-            //status
             case 2 -> {
                 filtered_tasks.removeIf(task -> task.getStatus() != criteria);
                 filtered_tasks.sort(Comparator.comparingInt(Task::getStatus));
                 return filtered_tasks;
-
             }
             default -> {
                 System.out.println("Not a valid choice");
@@ -63,13 +65,11 @@ public final class TaskManager {
     public ArrayList<Task> getTasks(int order) {
         ArrayList<Task> ordered_tasks = new ArrayList<>(tasks.values());
         switch (order) {
-            // High, medium, low, optional
             case 1 -> {
                 ordered_tasks.sort(Comparator.comparingInt(Task::getPriority));
                 return ordered_tasks;
             }
-            // overdue, In progress, pending, on hold, completed, cancelled
-            case 2 ->  {
+            case 2 -> {
                 ordered_tasks.sort(Comparator.comparingInt(Task::getStatus));
                 return ordered_tasks;
             }
@@ -95,24 +95,25 @@ public final class TaskManager {
                 return;  
             }
             try (FileReader reader = new FileReader(path.toString())) {
-                Type tasksMapType = new TypeToken<HashMap<Integer, Habit>>() {}.getType();
+                Type tasksMapType = new TypeToken<HashMap<Integer, Task>>() {}.getType();
                 tasks = gson.fromJson(reader, tasksMapType);
-
+    
                 if (tasks == null) {
                     tasks = new HashMap<>();
                 }
-
+    
                 int maxId = tasks.keySet().stream().max(Integer::compare).orElse(0);
-                count.set(maxId);
+                Task.updateCounter(maxId);
             }
         } catch (IOException e) {
             System.out.println(e);
             System.out.println("Failed to load from tasks file");
         }
     }
+    
 
     public void saveToFile() {
-        try (FileWriter writer = new FileWriter(Paths.get("data", "tasks.json").toString())) {
+        try (FileWriter writer = new FileWriter(Paths.get("Data", "tasks.json").toString())) {
             gson.toJson(tasks, writer);
         } catch (IOException e) {
             System.out.println(e);

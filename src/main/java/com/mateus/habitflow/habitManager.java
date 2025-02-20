@@ -1,5 +1,5 @@
-
 package com.mateus.habitflow;
+
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -9,7 +9,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.HashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -17,11 +16,9 @@ import com.google.gson.reflect.TypeToken;
 import com.mateus.habitflow.serialization.LocalDateDeserializer;
 import com.mateus.habitflow.serialization.LocalDateSerializer;
 
-
 public final class HabitManager {
     private HashMap<Integer, Habit> habits = new HashMap<>();
-    private static final AtomicInteger count = new AtomicInteger(0);
-    private Gson gson;
+    private final Gson gson;
 
     public HabitManager() {
         gson = new GsonBuilder()
@@ -58,32 +55,30 @@ public final class HabitManager {
     }
 
     public void loadFromFile() {
-    Path path = Paths.get("Data", "habits.json");
-
-    try {
-        if (!Files.exists(path)) {
-            Files.createDirectories(path.getParent()); 
-            Files.createFile(path); 
-            habits = new HashMap<>();  
-            return;  
-        }
-        try (FileReader reader = new FileReader(path.toString())) {
-            Type habitsMapType = new TypeToken<HashMap<Integer, Habit>>() {}.getType();
-            habits = gson.fromJson(reader, habitsMapType);
-
-            if (habits == null) {
-                habits = new HashMap<>();
+        Path path = Paths.get("Data", "habits.json");
+        try {
+            if (!Files.exists(path)) {
+                Files.createDirectories(path.getParent()); 
+                Files.createFile(path); 
+                habits = new HashMap<>();  
+                return;  
             }
-
-            int maxId = habits.keySet().stream().max(Integer::compare).orElse(0);
-            count.set(maxId);
+            try (FileReader reader = new FileReader(path.toString())) {
+                Type habitsMapType = new TypeToken<HashMap<Integer, Habit>>() {}.getType();
+                habits = gson.fromJson(reader, habitsMapType);
+    
+                if (habits == null) {
+                    habits = new HashMap<>();
+                }
+                int maxId = habits.keySet().stream().max(Integer::compare).orElse(0);
+                Habit.updateCounter(maxId);
+            }
+        } catch (IOException e) {
+            System.out.println(e);
+            System.out.println("Failed to load from habits file");
         }
-    } catch (IOException e) {
-        System.out.println(e);
-        System.out.println("Failed to load from habits file");
     }
-}
-
+    
     public void saveToFile() {
         try (FileWriter writer = new FileWriter(Paths.get("Data", "habits.json").toString())) {
             gson.toJson(habits, writer);
